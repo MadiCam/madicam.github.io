@@ -406,9 +406,10 @@
 
 /* ================================================================== footer */
 
-/* Manta lattice behind makers + footer. Spec in docs/madicam-pattern.css:
- * 150px cell, atan(5/12) turn, 1950px tile. Tune size and strength, not angle.
- * One region so the lattice is continuous; a mask fades it in from the log. */
+/* Manta lattice behind makers + footer. Tile is assets/img/madicam-pattern.svg.
+ * Spec lives in docs/ (untracked). 150px cell, atan(5/12) turn, 1950px tile.
+ * Tune --manta-size and --manta-strength, not the angle. One region so the
+ * lattice is continuous; a mask fades it in from the log. */
 .manta-field {
   --manta-size: 1950px;
   --manta-strength: 0.05;
@@ -423,7 +424,7 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url("../docs/madicam-pattern.svg");
+  background-image: url("../assets/img/madicam-pattern.svg");
   background-repeat: repeat;
   background-size: var(--manta-size) var(--manta-size);
   background-position: center;
