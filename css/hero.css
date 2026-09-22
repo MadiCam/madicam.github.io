@@ -1,0 +1,965 @@
+/* hero.css — the reconstructed control layer, its glass, and the 15s loop.
+ *
+ * The premise of the app is a glass control layer over living water, so the
+ * hero is literally one rather than a picture of one. The video is not inside
+ * the phone; the phone is a window onto it.
+ *
+ * Every length here is `<points> * var(--u)`, where the points come from
+ * tokens.css and --u is pixels per point for
+ * the frame at its current size. No raw numbers of the app's own live in this
+ * file, so the two cannot drift apart.
+ */
+
+/* ================================================================= the stage */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--abyss);
+}
+
+/* SF Rounded, which is what the app's control layer is set in — see .ctl__word
+ * for why this counts as the system font rather than a second typeface. Declared
+ * once here because three places need it: the control words, the text marks, and
+ * the timer. */
+:root {
+  --font-round:
+    ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Varela Round",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: center;
+  /* Tight on a phone, generous on a desktop. On a narrow viewport the frame is
+   * 874 points tall and the copy above it is another 250 or so, which will not
+   * both fit a phone screen at a size where the control words stay readable —
+   * so the frame is deliberately cropped by the fold and the capture controls
+   * are what scrolling reveals. Every point spent on padding here is frame the
+   * visitor does not see, which is why this is not a round number. */
+  padding-block: clamp(2.5rem, 8vh, 8rem) clamp(2rem, 6vh, 6rem);
+  min-height: 100svh;
+  /* One centred column at every width: title on top, the frame in the middle,
+   * the call to action under it. The frame is the subject of the hero, so it
+   * gets the centre of the screen and the type sits square above it rather
+   * than beside it. */
+  grid-template-columns: 1fr;
+  justify-items: center;
+  /* Wider than the page's own measure. A landscape frame is 874 points across
+   * and the 68rem body column cannot hold one at a useful size; capping the
+   * hero there would shrink --u on exactly the large screens that have room to
+   * spare. */
+  max-width: 88rem;
+
+  /* One order at every width: copy, frame, call to action.
+   *
+   * This used to swap on a phone — call to action second, frame last, so
+   * nothing was stranded behind a frame that runs past the fold. The cost was
+   * that a diver on a phone read the headline, the colour pitch and the price
+   * before seeing a single control, and the control layer is half of what this
+   * page sells. An image cannot carry that argument if it arrives after the buy
+   * button. So the frame comes second everywhere, and on a phone the call to
+   * action is a scroll away — deliberately. */
+  grid-template-rows: auto auto auto;
+}
+
+.hero__copy  { grid-row: 1; }
+.hero__stage { grid-row: 2; }
+.hero__cta   { grid-row: 3; }
+
+@media (min-width: 62rem) {
+  .hero__inner {
+    gap: clamp(1.75rem, 3vw, 3rem);
+    /* The frame takes whatever the type leaves, which is what puts it in the
+     * middle of the screen rather than merely in the middle of the page. */
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* ---------------------------------------------------------------- the water */
+
+/* The layer underneath the video is a designed one rather than a blank: depth
+ * falling off downward, one cold shaft of light off-centre, and a slight green
+ * cast where the light enters. It is what shows through if the video is
+ * refused, still loading, or 404. */
+.hero__footage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(70% 55% at 62% -8%, rgba(150, 226, 234, .30) 0%, transparent 62%),
+    radial-gradient(40% 70% at 24% 0%, rgba(88, 178, 190, .16) 0%, transparent 70%),
+    linear-gradient(to bottom,
+      #0d4b5c 0%,
+      #0a3f52 22%,
+      #072e40 52%,
+      #051f2d 78%,
+      #04141d 100%);
+}
+
+.hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A gradient, not a filter: it holds the headline legible over whatever the
+ * footage happens to be doing, and it costs nothing per frame. The frame's own
+ * dimming of the surrounding water is done by .phone's spread shadow below. */
+.hero__wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Two jobs. The gradient holds the headline and the footer edge legible; the
+   * flat teal beneath it grades the footage cold and takes the brightness down.
+   *
+   * A grade rather than a `filter` on the video, deliberately: filtering a
+   * playing video is a per-frame GPU cost on the one element that is already
+   * the most expensive thing on the page, and this buys the same look for a
+   * single composited layer. It sits *below* the frame, so the pane's
+   * backdrop-filter samples it too and the whole hero is graded as one image
+   * rather than the inside and the outside drifting apart.
+   *
+   * The footage is bright tropical water and the product is used in cold, dim
+   * water. This is where that gap is closed. */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(4, 17, 26, .78) 0%,
+      rgba(4, 17, 26, .34) 34%,
+      rgba(4, 17, 26, .42) 66%,
+      rgba(4, 17, 26, .92) 100%
+    ),
+    linear-gradient(rgba(6, 38, 54, .3), rgba(6, 38, 54, .3));
+}
+
+/* ----------------------------------------------------------------- the copy */
+
+/* Above the frame in paint order, and it has to be said explicitly: .phone
+ * carries a 200vmax spread shadow to darken the water, and that shadow covers
+ * the whole viewport. Left to document order it would dim the headline by 62%
+ * along with the sea. The copy is the one thing on the hero that must not be
+ * behind the glass. */
+.hero__copy {
+  position: relative;
+  z-index: 1;
+  /* Set to two lines at the top of the ramp. The headline sits directly over
+   * the frame, so its measure is chosen to keep it a tight block rather than to
+   * fill the row. */
+  max-width: 40rem;
+  text-align: center;
+}
+
+/* The mark, over the headline. Sized well clear of the 48px floor below which
+ * the glint fails, and spaced by roughly the quarter-height
+ * clear space the brand asks for. */
+.hero__mark {
+  display: block;
+  width: clamp(5.5rem, 4.5rem + 4vw, 8rem);
+  height: auto;
+  margin: 0 auto clamp(1.25rem, 2.5vw, 1.75rem);
+  filter: drop-shadow(0 2px 18px rgba(2, 12, 19, .6));
+}
+
+.hero__copy h1 {
+  /* A step down from the page's own h1 ramp: the frame underneath is the
+   * subject, and a headline set to the full viewport would out-shout it. */
+  font-size: clamp(2rem, 1.5rem + 2.2vw, 3.05rem);
+  text-shadow: 0 2px 24px rgba(2, 12, 19, .7);
+}
+
+.hero__copy .lede {
+  margin: 1.1rem 0 0;
+  text-shadow: 0 1px 14px rgba(2, 12, 19, .8);
+}
+
+/* Also above the frame in paint order, for the same reason the copy is. */
+.hero__cta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .85rem;
+}
+
+/* Triple duty: the trial, the price and the differentiator, in two sentences.
+ * Capped narrow so it breaks between them rather than anywhere. */
+.hero__terms {
+  margin: 0;
+  color: var(--haze);
+  font-size: .875rem;
+  text-shadow: 0 1px 10px rgba(2, 12, 19, .9);
+  max-width: 26rem;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* The hero badge is the page's main call to action, so it runs well above
+ * Apple's 40px minimum. Scaled as a whole — the artwork is unchanged, which is
+ * what the guidelines ask for. */
+.hero__cta .appstore img { height: clamp(56px, 48px + 1.6vw, 72px); }
+.hero__cta .appstore { padding: 6px; border-radius: 13px; }
+.hero__cta .appstore:focus-visible { border-radius: 13px; }
+
+/* The one number above the fold. */
+.hero__terms .price { color: var(--chalk); font-weight: 700; }
+
+/* ================================================================ the frame */
+
+/* A size container, so --u can be resolved against the column the frame
+ * actually gets rather than against the viewport. The two differ by the width
+ * of the headline beside it, and by however much .wrap has capped the row —
+ * sizing the frame off vw made it overflow at 1440px and shrink at 1920px. */
+.hero__stage {
+  position: relative;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  justify-self: stretch;
+  container-type: inline-size;
+}
+
+/* Stretched to fill the 1fr row, and a *size* container rather than an inline
+ * one, so the frame can be measured against the height the type left over as
+ * well as the width. That is the whole mechanism behind "in the middle of the
+ * screen": the frame takes the space that is actually free, at whatever the
+ * headline happened to wrap to, instead of being given a fixed share of the
+ * viewport and hoping.
+ *
+ * Only from 62rem up. On a phone the row is content-sized, and size
+ * containment there would resolve the height to zero and collapse the frame. */
+@media (min-width: 62rem) {
+  .hero__stage {
+    align-self: stretch;
+    container-type: size;
+    /* A floor on the row, so a short landscape window cannot squeeze the frame
+     * until the control words stop being readable. 0.78 of a point per pixel
+     * puts the 18pt labels at 14px, which is about where they stop carrying the
+     * argument. Below this the hero grows past one screen instead — the frame
+     * losing legibility costs more than the fold does. */
+    min-height: calc(var(--panel-short) * 0.78px);
+  }
+}
+
+/* Portrait by default, landscape from 62rem up. Both are the same numbers in a
+ * different order — the frame never changes shape, only which axis is long.
+ *
+ * Mobile first, and it matters: most visitors are divers on a phone. There --u
+ * comes off the frame's own column and the hero is allowed to run taller than
+ * one screen. Fitting a whole portrait frame into 100svh instead would shrink
+ * --u until the control words stop being readable, and a hero whose entire
+ * argument is legibility cannot afford that. */
+.phone {
+  /* Width-driven, with a height cap that only bites on a short viewport. The
+   * cap is 88svh rather than 100: the frame is allowed to stand slightly taller
+   * than the screen, because the alternative is shrinking the control words
+   * below the size that makes the argument. */
+  --u: min(
+    calc(min(100cqw, 30rem) / var(--panel-short)),
+    calc(88svh / var(--panel-long))
+  );
+  --frame-radius: 54;   /* pt. A modern iPhone's display corner. */
+  /* The sensor-housing band along a portrait frame's top edge. The panel is
+   * laid out in a canonical landscape space whose *leading* edge is the frame's
+   * top once it has been turned, so this is the panel's leading padding in
+   * portrait and nothing at all in landscape — which is exactly how
+   * the app remaps it.
+   *
+   * The only device measurement on this page not taken from tokens.css. It
+   * earns its place because a portrait frame really does stand its controls off the top by
+   * this much: at --edge-inset the top row sits where the Dynamic Island is, and
+   * a screenshot of the app does not look like that. */
+  --safe-band: 59;      /* pt */
+
+  position: relative;
+  width: calc(var(--panel-short) * var(--u));
+  height: calc(var(--panel-long) * var(--u));
+  border-radius: calc(var(--frame-radius) * var(--u));
+
+  /* What makes the frame a window rather than a container. The spread shadow
+   * darkens every pixel of footage *outside* the frame, concentric with the
+   * frame's own radius and for free; the blurred one feathers that edge just
+   * enough that it reads as depth of field rather than as a mask. The water
+   * inside is then lifted by .phone__pane, so the pane is measurably more alive
+   * than the water around it. That difference is the whole composition. */
+  box-shadow:
+    0 0 0 200vmax rgba(3, 13, 20, .42),
+    0 0 calc(90 * var(--u)) calc(10 * var(--u)) rgba(2, 10, 16, .5);
+}
+
+/* Landscape: the same panel, one quarter turn the other way, which is exactly
+ * what the app does when the housing turns. --u becomes whichever of the
+ * column's width and the viewport's height binds first. */
+@media (min-width: 62rem) {
+  .phone {
+    /* Both axes off the stage's own box now, so the frame fills the space the
+     * headline and the call to action leave and no more. */
+    --u: min(
+      calc(100cqw / var(--panel-long)),
+      calc(100cqh / var(--panel-short))
+    );
+
+    width: calc(var(--panel-long) * var(--u));
+    height: calc(var(--panel-short) * var(--u));
+  }
+}
+
+/* The pane: a saturation and contrast lift on the footage behind it, and
+ * nothing else. No blur — this is the one piece of glass on the screen you are
+ * meant to see straight through.
+ *
+ * Note what it does *not* do: brighten. It did, and over real footage that was
+ * the wrong instinct — the frame read as a lamp shining through the page rather
+ * than as a pane you are looking through, and it took the white glyphs' contrast
+ * with it. The window effect comes from .phone's spread shadow dimming
+ * everything *outside* the frame, so the inside only has to be clearer, not
+ * lighter. Held a shade under 1 so the interior sits at the same exposure as the
+ * graded water around it. */
+.phone__pane {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  backdrop-filter: saturate(1.2) contrast(1.08) brightness(.98);
+  -webkit-backdrop-filter: saturate(1.2) contrast(1.08) brightness(.98);
+  contain: paint;
+  pointer-events: none;
+}
+
+/* The frame's edge, resolved: a bright hairline where the glass meets the
+ * water, a darker one just outside it so the hairline has something to be
+ * bright against, and an inner glow that falls off within a few points. */
+.phone__edge {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(214, 240, 250, .30),
+    inset 0 0 calc(26 * var(--u)) calc(-14 * var(--u)) rgba(198, 234, 248, .22),
+    0 0 0 1px rgba(2, 12, 19, .55);
+}
+
+/* The thirds grid. A user setting, on in all three reference screenshots. */
+.phone__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  /* Faint. It is a composition aid the diver has switched on, not a readout,
+   * and at anything stronger a 1px white line over dark water reads as a table
+   * ruled across the hero. */
+  opacity: .13;
+}
+
+/* Two boxes spanning the middle third of each axis, each showing only the pair
+ * of edges that are the thirds lines. Cheaper than four positioned rules and it
+ * cannot drift out of alignment.
+ *
+ * A child of .phone rather than of .panel, deliberately: the grid belongs to the
+ * preview, and the preview does not turn when the panel does. */
+.phone__grid::before,
+.phone__grid::after {
+  content: "";
+  position: absolute;
+  border-color: rgba(255, 255, 255, .9);
+  border-style: solid;
+  border-width: 0;
+}
+
+.phone__grid::before {
+  inset: 0 33.333% 0 33.333%;
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
+.phone__grid::after {
+  inset: 33.333% 0 33.333% 0;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
+/* ------------------------------------------------------- the recording border */
+
+/* Designed rather than copied: solid at the very
+ * edge of the display, fading *inward* to nothing within --border-depth, so it
+ * reads as the image being lit rather than as a rectangle drawn on top of it.
+ *
+ * An inset box-shadow is exactly that shape and nothing else. The spread holds
+ * it at full strength for --border-core (4pt) from the edge; the blur then
+ * carries it to nothing by --border-depth (12pt). Because it is a shadow inside
+ * a rounded box, it is concentric with the frame's radius by construction —
+ * which is the same reason the app draws it with a ConcentricRectangle rather
+ * than a rectangle. The second, wider shadow is the spill: far fainter, reaching
+ * about twice as deep, and it is what stops the fade having a visible end.
+ *
+ * The two reds are not the same red. This one is fully saturated and carries the
+ * alarm; the disc inside RECORD is a softer coral and carries the shape. */
+.phone__border {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow:
+    inset 0 0 calc(var(--border-depth) * var(--u))
+                calc(var(--border-core) * var(--u)) var(--red),
+    inset 0 0 calc(var(--border-depth) * 1.7 * var(--u))
+                calc(var(--border-core) * -.5 * var(--u))
+                color-mix(in srgb, var(--red) 26%, transparent);
+  transition: opacity .42s var(--ease);
+}
+
+.phone[data-recording="true"] .phone__border { opacity: 1; }
+
+/* Black, never white. A white flash on a night dive destroys dark adaptation,
+ * and it is the one piece of feedback on this screen that had to be argued for
+ * rather than inherited. */
+.phone__blink {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  background: #000;
+  opacity: 0;
+}
+
+.phone[data-blink="true"] .phone__blink {
+  animation: shutter-blink calc(var(--shutter-blink) * 2) steps(1, end);
+}
+
+@keyframes shutter-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ================================================================= the panel */
+
+/* Laid out once, in landscape, always. Portrait is never a second layout — it
+ * is this panel rotated 90° clockwise onto the taller frame, exactly as
+ * the app does it, with each control's own content spun back upright
+ * afterwards. That one placement is what makes SETUP read as *beside* LOCK in
+ * landscape and *under* LOCK in portrait without a second rule existing. */
+.panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: calc(var(--panel-long) * var(--u));
+  height: calc(var(--panel-short) * var(--u));
+  transform: translate(-50%, -50%) rotate(90deg);
+  padding: calc(var(--edge-inset) * var(--u));
+  /* The band, on the one edge that has one. Membrane tension still governs the
+   * other three, so they stay at --edge-inset. */
+  padding-left: calc(var(--safe-band) * var(--u));
+}
+
+@media (min-width: 62rem) {
+  .panel {
+    transform: translate(-50%, -50%);
+    padding-left: calc(var(--edge-inset) * var(--u));
+  }
+}
+
+/* The positioning context every control is placed in: the panel inside its
+ * edge inset. Membrane tension is highest at the perimeter, so nothing sits
+ * closer than --edge-inset to one. */
+.panel__inset {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Content counter-rotation, as in the app: -90° in portrait,
+ * zero in landscape. Applied to the glyph and the word inside each control and
+ * never to the control itself — rotating a control would make its layout bounds
+ * breathe, and an edge-aligned parent would then shove the button around
+ * mid-turn. */
+.ctl__face,
+.record__shape,
+.thumb {
+  transform: rotate(-90deg);
+  transition: transform var(--glyph-turn) var(--ease);
+}
+
+@media (min-width: 62rem) {
+  .ctl__face,
+  .record__shape,
+  .thumb { transform: none; }
+}
+
+/* ------------------------------------------------------------ control shells */
+
+.ctl {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: #fff;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .08s ease-out, filter .08s ease-out;
+}
+
+/* Visible presses, so the loop reads as presses rather than as things happening
+ * by themselves. The app's own figure: 0.96. */
+.ctl[data-pressed="true"] {
+  transform: scale(.96);
+  filter: brightness(1.22);
+}
+
+.ctl--lock   { top: 0; left: 0;  width: calc(var(--secondary) * var(--u)); height: calc(var(--secondary) * var(--u)); }
+.ctl--zoom   { top: 50%; left: 0; width: calc(var(--secondary) * var(--u)); height: calc(var(--secondary) * var(--u)); margin-top: calc(var(--secondary) * var(--u) / -2); }
+.ctl--sleep  { bottom: 0; left: 0; width: calc(var(--secondary) * var(--u)); height: calc(var(--secondary) * var(--u)); }
+.ctl--photo  { top: 0; right: 0; width: calc(var(--photo) * var(--u));     height: calc(var(--photo) * var(--u)); }
+.ctl--record { bottom: 0; right: 0; width: calc(var(--record) * var(--u));  height: calc(var(--record) * var(--u)); }
+
+/* Inboard of LOCK by a full dead zone, and down by half the difference in
+ * diameters so the two share a row. Its smallness is the message: it is the one
+ * thing on screen that is not a dive control. Do not enlarge it for balance or
+ * move it to the middle for symmetry. */
+.ctl--setup {
+  top: calc(var(--settings-drop) * var(--u));
+  left: calc(var(--settings-inboard) * var(--u));
+  width: calc(var(--settings) * var(--u));
+  height: calc(var(--settings) * var(--u));
+}
+
+/* Hidden while recording, along with the panel it opens. That makes "this app
+ * has five controls" literally true at the moment concentration matters. */
+.phone[data-recording="true"] .ctl--setup {
+  opacity: 0;
+  transition: opacity var(--record-morph) var(--ease);
+  pointer-events: none;
+}
+
+/* ======================================================== glass, tiers B → A */
+
+/* The surface itself. Tier B is the default and the one most visitors will
+ * actually see: frosted only, no refraction, and it has to read as glass on its
+ * own. If the frosted version only works because the refraction was carrying
+ * it, the design has failed — so this is the tier that was designed first.
+ *
+ * The saturation lift is doing more work than the blur. These surfaces pick up
+ * and *amplify* the blue behind them, reading more saturated than the water
+ * itself, and that is a large part of why they look like glass rather than like
+ * translucent plastic. */
+.ctl__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+
+  /* Lighter than it was. Over real footage the tint plus a 1.75 saturation lift
+   * compounded on water that is already saturated blue, and the circles went
+   * from glass to solid blue plastic — the specular stack was still there and
+   * had nothing left to read against. The lift is the thing that makes these
+   * look like glass, so it stays; it just does not need to be that large when
+   * the water is doing half of it already. */
+  background:
+    linear-gradient(
+      158deg,
+      rgba(202, 238, 250, .15) 0%,
+      rgba(126, 186, 210, .06) 46%,
+      rgba(88, 150, 180, .11) 100%
+    );
+
+  backdrop-filter: blur(calc(9 * var(--u))) saturate(1.45) brightness(1.02);
+  -webkit-backdrop-filter: blur(calc(9 * var(--u))) saturate(1.45) brightness(1.02);
+
+  /* The inset highlight stack, which is what actually reads as glass. Six
+   * layers, and each one is doing a named job:
+   *   1. a faint hairline inner ring — the cut edge of the glass
+   *   2. the specular arc top-left, where the rim catches the surface light
+   *   3. the answering bounce bottom-right, dimmer and cooler
+   *   4. a soft inner glow, lifting the middle of the disc off the water
+   *   5. and 6. two deep soft inset shadows, which is where thickness comes from
+   * then one outer contact shadow, so the control sits *on* the water.
+   *
+   * Layers 1 to 4 are all much weaker than they were. At full strength they
+   * summed, all the way round the rim, into a continuous white outline — the
+   * circles read as glowing rather than as glass, which is the failure mode of
+   * this technique when every highlight is turned up at once. The fix is not to
+   * remove any of them: it is to let the *specular* be the only bright thing,
+   * and keep the ring, the bounce and the glow as support. So layer 2 is by far
+   * the strongest of the four, and it is also the tightest — a highlight in one
+   * place, not a halo everywhere. The dark layers 5 and 6 are untouched, since
+   * they were never the problem and they are where the thickness lives. */
+  box-shadow:
+    inset 0 0 0 1px rgba(233, 250, 255, .2),
+    inset calc(2 * var(--u)) calc(2.5 * var(--u)) calc(4 * var(--u)) calc(-2.5 * var(--u)) rgba(255, 255, 255, .5),
+    inset calc(-2 * var(--u)) calc(-2.5 * var(--u)) calc(5 * var(--u)) calc(-3.5 * var(--u)) rgba(200, 240, 253, .2),
+    inset 0 0 calc(20 * var(--u)) calc(-9 * var(--u)) rgba(226, 247, 255, .1),
+    inset 0 calc(15 * var(--u)) calc(28 * var(--u)) calc(-17 * var(--u)) rgba(3, 26, 38, .55),
+    inset 0 calc(-11 * var(--u)) calc(22 * var(--u)) calc(-15 * var(--u)) rgba(3, 26, 38, .34),
+    0 calc(5 * var(--u)) calc(18 * var(--u)) calc(-4 * var(--u)) rgba(2, 14, 22, .34);
+
+  /* Load-bearing, not micro-optimisation: this is a filtered node over a
+   * playing video, so it gets its own layer and is fenced off from the rest of
+   * the page's paint. */
+  contain: paint;
+  will-change: transform;
+}
+
+/* A moving sheen across the rim, very slow and very faint. It is the one thing
+ * on the glass that is not derived from the app, and it is here because a
+ * static specular over *moving* water reads as a decal. Ten seconds, so it is
+ * never the thing you are looking at. */
+.ctl__glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    112deg,
+    transparent 34%,
+    rgba(255, 255, 255, .16) 48%,
+    transparent 62%
+  );
+  opacity: .55;
+  animation: glass-sheen 11s var(--ease) infinite;
+}
+
+@keyframes glass-sheen {
+  0%, 62%, 100% { transform: translateX(-42%); opacity: 0; }
+  20%           { opacity: .5; }
+  46%           { transform: translateX(42%); opacity: 0; }
+}
+
+/* Tier A — refraction at the control edges. Chromium supports an SVG filter in
+ * backdrop-filter; Safari and Firefox do not, and hero.js probes for it rather
+ * than sniffing the user agent. The displacement scale is deliberately low: the
+ * reference values of 20–28 are tuned against a static photo and look seasick
+ * over moving water. */
+html[data-glass="a"] .ctl__glass {
+  backdrop-filter: url(#glass-refract) blur(calc(7 * var(--u))) saturate(1.8) brightness(1.04);
+  -webkit-backdrop-filter: url(#glass-refract) blur(calc(7 * var(--u))) saturate(1.8) brightness(1.04);
+}
+
+html[data-glass="a"] .phone__pane {
+  backdrop-filter: saturate(1.2) contrast(1.06) brightness(1.05);
+  -webkit-backdrop-filter: saturate(1.2) contrast(1.06) brightness(1.05);
+}
+
+/* Tier C — opaque fills. Pleasingly this is not a fallback so much as a second
+ * real product state: it is exactly what the app's own High Contrast setting
+ * does, down to the figures (black at 0.65, a 3pt white border at 0.9). */
+html[data-glass="c"] .ctl__glass,
+html[data-glass="c"] .phone__pane {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-glass="c"] .ctl__glass {
+  background: rgba(0, 0, 0, .65);
+  box-shadow: inset 0 0 0 calc(3 * var(--u)) rgba(255, 255, 255, .9);
+}
+
+html[data-glass="c"] .ctl__glass::after { display: none; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .ctl__glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0, 0, 0, .65);
+    box-shadow: inset 0 0 0 calc(3 * var(--u)) rgba(255, 255, 255, .9);
+  }
+  .ctl__glass::after { display: none; }
+  .phone__pane { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* ------------------------------------------------------------------- labels */
+
+/* The known failure of this technique is text over refracted backgrounds. So
+ * every label sits on an isolated layer *above* the filter, never inside it,
+ * and carries its own shadow — tested against a bright shaft of light in the
+ * footage rather than against the dark parts. */
+.ctl__face {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: calc(var(--mark-gap) * var(--u));
+  line-height: 1;
+  /* Tuned against the brightest water in the footage rather than the darkest,
+   * which is the whole discipline here: if a word becomes unreadable when the
+   * water behind it brightens, the treatment is wrong, not the water. */
+  text-shadow:
+    0 calc(1 * var(--u)) calc(3 * var(--u)) rgba(2, 16, 24, .72),
+    0 0 calc(10 * var(--u)) rgba(2, 16, 24, .5);
+  pointer-events: none;
+}
+
+/* The system font stack, weights 700 and 900 only, and no other typeface
+ * anywhere inside the phone frame.
+ *
+ * Rounded, because the app is: every word and text mark on these controls is
+ * `design: .rounded`, which is SF Rounded. `ui-rounded` is the CSS generic that
+ * resolves to exactly that face on Apple platforms, so this is still the system
+ * font rather than a second typeface. It is a Safari
+ * generic today, so the named fallbacks catch the browsers that do not know it
+ * and the stack ends at the same -apple-system it had before. No webfont: SF Pro
+ * Rounded is under the same licence as SF Pro and is never self-hosted.
+ *
+ * The two glyph marks (SLEEP's moon, and the capture controls' icons) are not
+ * rounded in the app either — they are drawn SVG here, so there is nothing to
+ * set. */
+.ctl__mark,
+.ctl__word {
+  font-family: var(--font-round);
+  font-weight: 900;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+
+.ctl__mark { font-size: calc(var(--lens-size) * var(--u)); }
+.ctl--lock .ctl__mark { font-size: calc(var(--lock-size) * var(--u)); }
+
+.ctl__word { font-size: calc(var(--label-size) * var(--u)); letter-spacing: .01em; }
+
+/* A glyph inks close to its whole point size where a numeral only reaches cap
+ * height, about 0.71 of it, so the two need different numbers to read as one
+ * size on screen. --mark-symbol-size is the app's measured answer to that. */
+.ctl__glyph {
+  width: calc(var(--mark-symbol-size) * var(--u));
+  height: calc(var(--mark-symbol-size) * var(--u));
+  fill: currentColor;
+}
+
+/* SETUP is glyph-only, against the glyph-plus-word rule. There is no room for a
+ * word at this size that would be legible behind a mask, so the glyph has to be
+ * one that carries itself — and the dot grid is, being the platform's own way
+ * of saying *more lives here* on a camera screen specifically. */
+.ctl--setup .ctl__glyph {
+  width: calc(var(--settings) * .45 * var(--u));
+  height: calc(var(--settings) * .45 * var(--u));
+}
+
+/* The two capture controls carry a glyph alone. At that size, in those corners,
+ * they are unambiguous, and a word would be clutter where nothing is in doubt.
+ * The distinction from the three secondaries is doing work — keep it.
+ *
+ * 0.48, where the app passes 0.40 to `.font(.system(size:))`, and the difference
+ * is not a disagreement. A font size is not an ink size: an SF Symbol inks to
+ * very nearly its whole point size, whereas this drawing sits in a 24-unit box
+ * and only inks 21 of them across and 18 down. Scaling the *box* by 0.40 was
+ * therefore rendering a glyph about a fifth smaller than the app's, which is
+ * exactly how it read against the screenshots. This puts the ink back on the
+ * app's figure rather than overriding it. */
+.ctl--photo .ctl__glyph {
+  width: calc(var(--photo) * .48 * var(--u));
+  height: calc(var(--photo) * .48 * var(--u));
+}
+
+/* LOCK fills solid amber when engaged, and its content goes black on it. */
+.ctl--lock[data-locked="true"] .ctl__glass {
+  background: var(--amber);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: inset 0 0 0 calc(3 * var(--u)) rgba(255, 255, 255, .9);
+}
+
+.ctl--lock[data-locked="true"] .ctl__face {
+  color: #000;
+  text-shadow: none;
+}
+
+/* PHOTO fills solid white for ~150ms so the diver knows *which* control fired. */
+.ctl--photo[data-pulsing="true"] .ctl__glass {
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.ctl--photo[data-pulsing="true"] .ctl__face { color: #000; text-shadow: none; }
+
+/* ------------------------------------------------------------------- RECORD */
+
+/* A glass circle holding a solid red disc with a white video glyph on it. No
+ * white ring, no word.
+ *
+ * The glass is deliberately *not* tinted red while recording: a red shape on a
+ * red surface destroys the one thing this control has to communicate. The
+ * screen border carries the red; this button carries the shape. */
+.record__shape {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: calc(var(--record) * .64 * var(--u));
+  height: calc(var(--record) * .64 * var(--u));
+  border-radius: 50%;
+  background: var(--record-coral);
+  transition:
+    width var(--record-morph) ease-in-out,
+    height var(--record-morph) ease-in-out,
+    border-radius var(--record-morph) ease-in-out;
+}
+
+:root {
+  /* The softer of the two reds. The border is fully saturated and carries the
+   * alarm; this carries the shape. */
+  --record-coral: #f4483f;
+}
+
+/* Recording shrinks the footprint a little as well as squaring it: at equal
+ * size a square reads *larger* than a circle, and the state change has to be
+ * unmistakable through a diffusing membrane. The app's own figures, 0.64 → 0.56
+ * with a 0.22 corner. */
+.phone[data-recording="true"] .record__shape {
+  width: calc(var(--record) * .56 * var(--u));
+  height: calc(var(--record) * .56 * var(--u));
+  border-radius: calc(var(--record) * .56 * .22 * var(--u));
+}
+
+/* Same correction as PHOTO's, from the app's 0.26. The camcorder is a wide,
+ * short drawing — 21 units across but only 11 tall in its 24-unit box — so the
+ * box has to be larger still for the ink to land where the app puts it. */
+.record__shape .ctl__glyph {
+  width: calc(var(--record) * .34 * var(--u));
+  height: calc(var(--record) * .34 * var(--u));
+  fill: #fff;
+}
+
+/* ============================================================ status strip */
+
+/* Along the edge nearest the diver's feet, non-interactive, and silent by
+ * default: it shows only what is true right now. No permanent clock. Centred
+ * on the panel's lower edge, in the gap between SLEEP and RECORD. */
+/* Which edge this lands on is not a free choice, and it is not the panel's
+ * bottom in both orientations. The app resolves it by taking the
+ * panel's own quarter turn back off the housing's angle: with the frame and the
+ * housing agreeing, a landscape frame puts the strip on the panel's bottom edge
+ * between SLEEP and RECORD, and a portrait frame puts it on the panel's
+ * *trailing* edge, running the other way and inset past the primary column.
+ *
+ * That inset is what stops the strip landing under RECORD. It is a full primary
+ * control plus a dead zone — max(PHOTO, RECORD), which is RECORD.
+ *
+ * Both come out in the same place for the diver: centred along the edge nearest
+ * their feet, reading upright, in the gap between the two capture controls.
+ *
+ * Sized to its own content rather than given a width, too. A wide box turned a
+ * quarter stands taller than the panel and pushes out through its edges — the
+ * same trap the app avoids on device. */
+.strip {
+  position: absolute;
+  top: 50%;
+  right: calc((var(--record) + var(--dead-zone)) * var(--u));
+  display: grid;
+  justify-items: center;
+  gap: calc(8 * var(--u));
+  font-size: calc(var(--timer-size) * var(--u));
+  white-space: nowrap;
+  transform: translateY(-50%) rotate(-90deg);
+  transition: transform var(--glyph-turn) var(--ease);
+  pointer-events: none;
+}
+
+@media (min-width: 62rem) {
+  .strip {
+    top: auto;
+    bottom: 0;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.strip__timer {
+  font-size: 1em;
+  /* Rounded and monospaced-digit, exactly as the app sets it. */
+  font-family: var(--font-round);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+  color: #fff;
+  /* Large white numerals need to survive a bright shaft of light behind them,
+   * and there is no glass under the strip to help. */
+  text-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(0, 0, 0, .6);
+  opacity: 0;
+  transition: opacity .2s var(--ease);
+}
+
+.phone[data-recording="true"] .strip__timer { opacity: 1; }
+
+/* Thin amber rule above the timer: the locked state has to be unmistakable at a
+ * glance. Same idea as the amber fill on LOCK, at the other end of the screen. */
+.strip__lock {
+  width: calc(120 * var(--u));
+  height: calc(4 * var(--u));
+  border-radius: 999px;
+  background: var(--amber);
+  opacity: 0;
+  transition: opacity .2s var(--ease);
+}
+
+.phone[data-locked="true"] .strip__lock { opacity: 1; }
+
+/* =========================================== confirmation thumbnail */
+
+/* Confirmation, not review: no tap target, no gallery, no way to fall down a
+ * reviewing rabbit hole mid-dive. Anchored to the top of the *panel*, in the
+ * gap between LOCK and PHOTO, so it lands in the same place for the diver
+ * however the app happened to pin itself. */
+.thumb {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: calc(92 * var(--u) / -2);
+  width: calc(92 * var(--u));
+  height: calc(92 * var(--u));
+  border-radius: calc(12 * var(--u));
+  overflow: hidden;
+  /* The frame goes in as a background rather than an <img> on purpose: a missing
+   * background is silent, where a missing <img> would draw the browser's
+   * torn-page icon over the hero. The fill underneath is still the fallback and
+   * still reads correctly on its own, so this survives the file being swapped or
+   * removed.
+   *
+   * Square source against a square element, so `cover` crops nothing. */
+  background-color: #0a2230;
+  background-image: url("../assets/img/snapshot.jpeg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) rgba(255, 255, 255, .8);
+  opacity: 0;
+  transition: opacity .3s var(--ease);
+  pointer-events: none;
+}
+
+.phone[data-thumb="true"] .thumb { opacity: 1; }
+
+/* ======================================================== reduced motion */
+
+/* The video holds on its poster frame, the controls sit in the idle state, and
+ * there is no loop. The page still makes sense: nothing in the argument depends
+ * on the animation, which is why it can be taken away cleanly. */
+@media (prefers-reduced-motion: reduce) {
+  .ctl__glass::after { animation: none; opacity: 0; }
+  .phone__border,
+  .strip__timer,
+  .strip__lock,
+  .thumb,
+  .record__shape,
+  .ctl__face { transition: none; }
+  .phone[data-blink="true"] .phone__blink { animation: none; }
+}

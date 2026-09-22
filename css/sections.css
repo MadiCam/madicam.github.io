@@ -1,0 +1,440 @@
+/* sections.css — the four blocks and the footer.
+ *
+ * Rhythm: type on the left, one piece of media on the right, with exactly one
+ * full-bleed break at the colour section. Three of the four blocks are that same
+ * shape (`.split`), which is what makes a page this short feel deliberate rather
+ * than assembled — every claim lands in the same place on screen each time.
+ *
+ * This started as a steady single column with the media stacked underneath, and
+ * that put a full-width landscape rectangle directly under the hero, which made
+ * the first thing after the fold the heaviest. Note the page still does not
+ * *alternate* sides: alternating collapses to one column on a phone anyway, so
+ * it buys nothing where most of the visitors are, and it costs the consistency
+ * that makes the repeat read as structure. The one break marks the most
+ * persuasive element on the page as the centrepiece.
+ *
+ * Two of the four blocks carry the page: controls and colour. The log and the
+ * makers come after them and are visibly shorter, which is the whole point of
+ * the restructure — a skimmer who reads only the headlines gets the pitch from
+ * the first two.
+ */
+
+/* ================================================================= sections */
+
+.section {
+  padding-block: clamp(4rem, 11vh, 7.5rem);
+  border-top: 1px solid var(--rule-soft);
+}
+
+.section:first-of-type { border-top: 0; }
+
+.section__head {
+  display: grid;
+  gap: .9rem;
+  max-width: 36rem;
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+/* There was a `01  NO MODE` eyebrow above every heading here. It is gone: it was
+ * template chrome rather than information, and the numbering implied a sequence
+ * the content never had. With three sections merged into one there are four
+ * blocks left, one of which is two people talking, so numbering them would say
+ * even less. The headlines carry it.
+ */
+
+.section__body { color: var(--haze); }
+
+/* An aside that answers the obvious objection, one size down. Used where a
+ * section needs a second thought without earning a second paragraph. */
+.section__note {
+  margin-top: 1.4rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--rule);
+  color: var(--dim);
+  font-size: .9375rem;
+  max-width: 34rem;
+}
+
+/* =============================================================== the slab */
+
+/* Two of the page's visuals are captured phone screens. The hero already uses a
+ * phone frame, so using it twice more would be monotonous — and dropping a frame
+ * entirely leaves the recordings floating with nothing to sit in. So the
+ * screens get a *lighter secondary frame*: a slab with a cold hairline and a
+ * shallow lift, cropped tight to content, with no device chrome at all. It reads
+ * as a sample of a screen rather than as a picture of a phone, which is the
+ * distinction that keeps it from competing with the hero. */
+.slab {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--deep);
+  box-shadow:
+    inset 0 0 0 1px rgba(150, 200, 220, .14),
+    0 1px 0 rgba(190, 230, 245, .07),
+    0 24px 60px -30px rgba(0, 0, 0, .8);
+}
+
+.slab video,
+.slab img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Both recordings are whole phone screens, held portrait, so both take the
+ * device's real aspect — and take it from tokens.css rather than from
+ * a typed 9/19.5, so it cannot drift from the app. This is the last thing on the
+ * page outside the hero that still reads tokens.css. */
+.slab--phone { aspect-ratio: var(--panel-short) / var(--panel-long); }
+
+/* A raw screen recording is square-cornered, but the recording border inside it
+ * follows the display's own rounded corner — so under the slab's 14px radius
+ * the screen's corners show outside the red. Clip to the display instead:
+ * measured off the recording, about 125px on a 1290 x 2796 frame, given per
+ * axis as a percentage so it stays circular at any size. */
+.slab--screen { border-radius: 10% / 4.62%; }
+
+/* No figcaptions anywhere any more. Both recordings used to carry one, and once
+ * the media moved beside the type the captions were restating the sentence two
+ * inches to their left — in a column narrow enough to make a two-line caption
+ * ragged. The copy says it; the recording shows it. */
+
+/* ---------------------------------------------------------- media placeholder */
+
+/* Every asset that is still to be shot or recorded. Named rather than
+ * blank, so the page can be reviewed at full size before the footage exists and
+ * so nothing ships looking finished when it is not. */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: .5rem;
+  padding: 1.5rem;
+  text-align: center;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(98, 210, 234, .05) 0 12px,
+      transparent 12px 24px
+    ),
+    var(--slate);
+  color: var(--dim);
+}
+
+.placeholder__name {
+  font-size: .8125rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--amber);
+}
+
+.placeholder__what { font-size: .8125rem; max-width: 24rem; line-height: 1.5; }
+
+/* ========================================== the split: type beside one image */
+
+/* Sections 1, 3 and 4 are all one shape: a column of type with a single piece of
+ * media beside it. One primitive, three uses, so the repeat is structural rather
+ * than three layouts that happen to resemble each other.
+ *
+ * Proportional columns rather than a fixed media width, with the media capped by
+ * --media and centred in whatever its column comes out as. A phone screen is
+ * 402:874, so at any width worth reading it is much taller than the type beside
+ * it — capping it is what keeps a two-paragraph block from sitting next to a
+ * tower. The type is centred against it for the same reason: top-aligned, the
+ * short blocks leave a hole under themselves.
+ *
+ * Media is second in document order at every width, so it reads and stacks under
+ * the copy that introduces it.
+ */
+.split {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+  align-items: center;
+}
+
+@media (min-width: 52rem) {
+  .split {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+}
+
+.split__copy > :last-child { margin-bottom: 0; }
+
+.split__copy h2 { margin-bottom: 1.2rem; }
+
+.split__copy p { color: var(--haze); }
+
+/* Capped, and flush to the right edge of the content column rather than centred
+ * in its own. Centred, it floated in the middle of its column with slack on both
+ * sides and lined up with nothing; ended, its right edge is the wrap's content
+ * edge, shared with the footer and with the other two splits. The before/after
+ * does not join that line — it is centred at 56rem — but that section is the
+ * deliberate break in the page and is supposed to sit differently. */
+.split__media {
+  position: relative;
+  margin: 0;
+  justify-self: end;
+  width: 100%;
+  max-width: var(--media, 18rem);
+}
+
+/* On a phone the media is the widest thing in the section, and a full-width
+ * 402:874 recording would be most of a screen tall on its own. Stacked under
+ * the copy there is no column edge left to share, so it is centred. */
+@media (max-width: 51.9375rem) {
+  .split__media { max-width: min(100%, 15rem); justify-self: center; }
+  .split--maker .split__media { max-width: 100%; }
+}
+
+/* The gallery still in section 3. The capture is a rounded card on black, so
+ * clipping it to the card's own corner radius (about 4.6% of its width) drops
+ * the black and leaves the card sitting straight on the page. */
+.gallery-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.1rem;
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, .8);
+}
+
+/* ================================ section 1: the points, and one recording */
+
+/* A list, because the argument *is* a list: five things that are true about the
+ * controls, and one recording that shows all of them at once.
+ */
+.points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: .9rem;
+  max-width: 38rem;
+}
+
+.points li { position: relative; padding-left: 1.65rem; }
+
+/* A short rule rather than a disc. The page has no other bullets and a dot next
+ * to type this size reads as decoration; a rule reads as instrument labelling,
+ * which is the register everything else here is in. Kept off --cyan, which is
+ * spent on links and focus only. */
+.points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .78em;
+  width: .85rem;
+  border-top: 1px solid var(--dim);
+}
+
+.points strong { color: var(--chalk); font-weight: 700; }
+
+/* ====================================== section 2: the before/after (full bleed) */
+
+.section--bleed {
+  border-top: 0;
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--deep) 0%, var(--abyss) 72%);
+  box-shadow: inset 0 1px 0 var(--rule-soft), inset 0 -1px 0 var(--rule-soft);
+}
+
+/* The one centred section on the page, because the thing it holds is centred
+ * and a left-aligned head above a centred 56rem control reads as a mistake. */
+.section--bleed .section__head { margin-inline: auto; text-align: center; }
+.section--bleed .section__head p { margin-inline: auto; }
+.section--bleed .section__body { max-width: 40rem; margin-inline: auto; }
+
+/* The most persuasive element on the page and the only thing a visitor will
+ * touch. It needs a divider, a handle, labels, and above all a resting state
+ * that invites a drag without an instruction telling them to drag — which is
+ * what the offset resting position and the handle's own weight are for. */
+.compare {
+  position: relative;
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--slate);
+  box-shadow:
+    inset 0 0 0 1px rgba(150, 200, 220, .14),
+    0 30px 70px -34px rgba(0, 0, 0, .85);
+  touch-action: pan-y;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.compare__layer { position: absolute; inset: 0; }
+
+.compare__layer img { width: 100%; height: 100%; object-fit: cover; }
+
+/* The corrected frame is on top and clipped from the left, so dragging right
+ * reveals more of it. That direction is deliberate: the gesture then *adds*
+ * colour rather than taking it away. */
+.compare__layer--after {
+  clip-path: inset(0 0 0 var(--split, 38%));
+}
+
+.compare__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split, 38%);
+  width: 44px;
+  margin-left: -22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+/* The divider proper: a hairline that the grip sits on. */
+.compare__handle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, .85);
+  box-shadow: 0 0 14px rgba(0, 0, 0, .55);
+}
+
+.compare__grip {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(232, 246, 251, .92);
+  color: #04111a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .45);
+  transition: transform .18s var(--ease);
+}
+
+.compare__handle:hover .compare__grip { transform: scale(1.06); }
+.compare__handle:active .compare__grip { transform: scale(.97); }
+
+.compare__grip svg { width: 20px; height: 20px; fill: currentColor; }
+
+.compare__handle:focus-visible { outline: none; }
+
+.compare__handle:focus-visible .compare__grip {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* Labels, so the pair still says which is which in a screenshot of the page. */
+.compare__tag {
+  position: absolute;
+  bottom: .85rem;
+  padding: .3rem .65rem;
+  border-radius: 6px;
+  background: rgba(4, 17, 26, .72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--chalk);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+
+.compare__tag--before { left: .85rem; }
+.compare__tag--after { right: .85rem; }
+
+.compare__hint {
+  margin: 1.1rem auto 0;
+  text-align: center;
+  max-width: 34rem;
+}
+
+/* ================================================ section 4: who made it */
+
+/* The shortest block on the page and the only one not in product voice, so it
+ * drops out of the section furniture: no index, a heading a step down from the
+ * other two, and the photo carried by a plain rounded frame rather than by a
+ * .slab — a slab is this page's frame for *screens*, and a snapshot of two
+ * people on a boat is not one. It is wider than the recordings because it is
+ * landscape; the column it sits in is the same one. */
+.section--maker h2 {
+  font-size: clamp(1.4rem, 1.15rem + 1.1vw, 1.95rem);
+}
+
+.split--maker { --media: 26rem; }
+
+.maker__portrait {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--slate);
+  box-shadow:
+    inset 0 0 0 1px rgba(150, 200, 220, .14),
+    0 24px 60px -30px rgba(0, 0, 0, .8);
+}
+
+.maker__portrait img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ================================================================== footer */
+
+.footer {
+  padding-block: clamp(3.5rem, 9vh, 6rem) 3rem;
+  border-top: 1px solid var(--rule);
+  background: var(--deep);
+}
+
+.footer__top {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 46rem) {
+  .footer__top {
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+  }
+}
+
+.footer__price {
+  color: var(--chalk);
+  font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin: 0;
+  max-width: 22rem;
+}
+
+.footer__meta {
+  margin-top: 2.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule-soft);
+  display: grid;
+  gap: .9rem;
+}
+
+.footer__meta p { max-width: 44rem; margin: 0; }
+
+/* Values still to be filled in. Deliberately conspicuous. */
+.tbc {
+  padding: 0 .3em;
+  border-radius: 3px;
+  background: rgba(255, 184, 39, .16);
+  box-shadow: inset 0 0 0 1px rgba(255, 184, 39, .4);
+  color: var(--amber);
+  font-weight: 600;
+  font-size: .95em;
+}
+
+html[data-assets="ready"] .tbc {
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font-weight: inherit;
+  padding: 0;
+}

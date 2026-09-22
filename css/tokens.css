@@ -1,0 +1,67 @@
+/* The app's control metrics. Keep these in step with the app whenever its
+ * controls change: the hero must match what ships.
+ *
+ * Lengths are unitless, in the app's own points: multiply by --u, which is
+ * pixels per point for the frame at its current size. Durations are seconds.
+ */
+
+:root {
+  /* Control sizes */
+  --record-diameter:    150;  /* pt */
+  --photo-diameter:     140;  /* pt */
+  --secondary-diameter: 110;  /* pt */
+  --settings-scale:     0.6;
+  --edge-inset:         28;  /* pt */
+  --dead-zone:          24;  /* pt */
+
+  /* Typography */
+  --timer-size:       44;  /* pt */
+  --label-size:       18;  /* pt */
+  --lens-size:        32;  /* pt */
+  --lock-size:        24;  /* pt */
+  --mark-symbol-size: 23;  /* pt */
+  --mark-gap:         6;  /* pt */
+
+  /* Recording border */
+  --border-depth:      12;  /* pt */
+  --border-core:       4;  /* pt */
+  --border-min-radius: 12;  /* pt */
+
+  /* Feedback timing */
+  --shutter-blink:  0.1s;
+  --button-pulse:   0.15s;
+  --record-morph:   0.15s;
+  --thumbnail-hold: 1.5s;
+  --glyph-turn:     0.2s;
+  --minimum-press:  0.08s;
+
+  /* Sleep mode */
+  --sleep-opacity: 0.4;
+
+  /* Derived by the same rule the app applies at runtime: the nominal
+   * sizes are maxima and the dead zone is a floor, so the left column
+   * shrinks its three circles until they are guaranteed to clear each
+   * other. --panel-short is the only number the page chooses for itself;
+   * everything below follows from it exactly as it does on device. */
+  --panel-short: 402;   /* iPhone 16 Pro width, the panel's short axis */
+  --panel-long:  874;   /* and its length */
+
+  --column: calc(var(--panel-short) - 2 * var(--edge-inset));
+  --secondary: min(
+    var(--secondary-diameter),
+    calc((var(--column) - 2 * var(--dead-zone)) / 3)
+  );
+  --capture-scale: min(
+    1,
+    calc((var(--column) - var(--dead-zone))
+       / (var(--photo-diameter) + var(--record-diameter)))
+  );
+  --photo:  calc(var(--photo-diameter) * var(--capture-scale));
+  --record: calc(var(--record-diameter) * var(--capture-scale));
+  --settings: calc(var(--secondary) * var(--settings-scale));
+
+  /* SETUP sits inboard of LOCK by a full dead zone, and down by half the
+   * difference in diameters so the two share a row. */
+  --settings-inboard: calc(var(--secondary) + var(--dead-zone));
+  --settings-drop: calc((var(--secondary) - var(--settings)) / 2);
+}
