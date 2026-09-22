@@ -405,8 +405,14 @@
   </div>
 </section>
 
+</main>
+
+<!-- Makers and the footer share one manta field so the lattice is continuous.
+     The pattern fades in from the log rather than starting as a hard edge. -->
+<div class="lower manta-field manta-field--band">
+
 <!-- ==========================================================================
-     4 — WHO MADE IT. The shortest block on the page, and the only one not in
+     4 — WHY. The shortest block on the page, and the only one not in
      product voice. No figure frame around the photo: the slab is this page's
      frame for *screens*, and a snapshot of two people on a boat is not one.
 ========================================================================== -->
@@ -416,60 +422,39 @@
          photo instead of a phone screen. -->
     <div class="split split--maker">
       <div class="split__copy">
-        <h2>Two brothers, one housing between them.</h2>
-        <p><span class="tbc">[name]</span> teaches diving. I'm
-          <span class="tbc">[name]</span>, an advanced diver who kept surfacing
-          with forty minutes of blue. We couldn't find a camera app built for how
-          you actually shoot down there, so we made one, and we dive with it.</p>
+        <h2>Built by two diving brothers.</h2>
+        <p>My brother is a diving instructor. I dive too. We wanted a
+          modern camera app with everything a diver actually needs:
+          easy-to-access controls, automatic colour correction, a visual
+          log book&hellip; We wanted it to be simple, easy to use, and
+          affordable. So we built our own.</p>
       </div>
 
-      <figure class="split__media maker__portrait" data-asset="makers">
-        <img src="assets/img/makers.jpg" alt="The two brothers who made MadiCam,
-          on a dive boat with their kit on.">
-        <div class="placeholder">
-          <span class="placeholder__name">Photo to come</span>
-          <span class="placeholder__what">The two of us on a dive boat.</span>
+      <figure class="split__media maker">
+        <div class="maker__portrait">
+          <img src="assets/img/makers.jpg" width="1024" height="768"
+               alt="The two brothers who made MadiCam, as kids, in a swimming pool.">
         </div>
+        <figcaption class="maker__caption">The two of us, still looking kind of the same.</figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-</main>
-
 <!-- ==========================================================================
-     FOOTER. Price, trial, compatibility, requirements, privacy. One line each,
-     not a pricing table.
+     FOOTER. One credit line. Price and the App Store badge already live in
+     the hero; this is just who made it, and how to reach them.
 ========================================================================== -->
 <footer class="footer">
-  <div class="wrap">
-    <div class="footer__top">
-      <p class="footer__price">€9.99 once. Free to download, try it on a
-        dive.</p>
-
-      <!-- No plate needed here: --deep is a solid colour, so the knocked-out
-           lettering picks it up and reads as dark type on a white lozenge, which
-           is exactly what this badge is designed to do on a dark background. -->
-      <a class="appstore" href="#">
-        <img src="assets/img/appstore-badge.svg" width="119.66407" height="40"
-             alt="Download on the App Store">
-      </a>
-    </div>
-
-    <div class="footer__meta">
-      <p class="fine">Designed around the DIVEVOLK SeaTouch 4 Max, and not
-        limited to it. iPhone, iOS 26 or later
-        <span class="tbc">[which models?]</span>.</p>
-
-      <p class="fine">A 45-minute dive at 4K, and a clip you can recover if the
-        app is killed mid-recording.</p>
-
-      <p class="fine">Support: <a href="mailto:support@example.com"><span class="tbc">support@…</span></a>
-        &nbsp;·&nbsp; No analytics, no tracking, no accounts. Your footage never
-        leaves your phone except into your own photo library.</p>
-    </div>
-  </div>
+  <p class="fine footer__credit">
+    Made with ☕️ and 🤿 by
+    <a href="https://rafapages.com" target="_blank" rel="noopener noreferrer">Rafa</a>
+    and Guille&nbsp;Pagés @ 2026
+    · <a href="mailto:madicam@rafapages.com">Contact Us</a>
+    · <a href="privacy.html">Privacy Policy</a>
+  </p>
 </footer>
+</div>
 
 <script src="js/hero.js" defer></script>
 <script src="js/compare.js" defer></script>

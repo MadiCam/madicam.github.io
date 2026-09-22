@@ -1,0 +1,54 @@
+/* MadiCam manta pattern
+   Interlaced up/down manta lattice, turned 22.62deg.
+
+   Why that angle: the lattice is built on a 150px square, and a turn of
+   atan(5/12) maps it onto itself every 13 steps. So the export is a plain
+   1950x1950 square that repeats with no seam. Change the angle and the
+   seam comes back, so tune scale and strength here, not rotation.
+
+   Density is background-size alone, one file for every scale:
+     1300px -> 80px manta   (fine)
+     1950px -> 120px manta  (default)
+     2925px -> 180px manta  (large)
+
+   The lens is knocked out of the mark, so whatever sits behind shows
+   through it. On --abyss that reads as a faint ring, which is the point.
+*/
+
+.manta-field {
+  --manta-size: 1950px;
+  --manta-strength: 0.05;
+  position: relative;
+  background-color: var(--abyss, #04111a);
+  isolation: isolate;
+}
+
+.manta-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("../img/madicam-pattern.svg");
+  background-repeat: repeat;
+  background-size: var(--manta-size) var(--manta-size);
+  background-position: center;
+  opacity: var(--manta-strength);
+}
+
+/* Quieter still behind long-form copy. */
+.manta-field--prose { --manta-strength: 0.035; }
+
+/* A short band or the footer can carry more. */
+.manta-field--band { --manta-size: 2925px; --manta-strength: 0.07; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* nothing moves; listed so no one adds a drift later by accident */
+}
+
+@media (max-width: 40rem) {
+  .manta-field { --manta-size: 1300px; }
+}
+
+/* The mark is chalk (#e8f2f6). To recolour, edit the single fill on the
+   <g> inside madicam-pattern.svg; every manta in the file takes it. */
