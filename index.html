@@ -9,6 +9,12 @@
 
 <meta name="theme-color" content="#04111a">
 
+<!-- madi.cam is the one address. madicam.github.io redirects to it, and the
+     canonical says so to anything that arrived the other way. -->
+<link rel="canonical" href="https://madi.cam/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="alternate" type="text/markdown" title="MadiCam, for language models" href="/llms.txt">
+
 <!-- The small mark in chalk on a deep-water blue plate. The SVG is what every
      current browser takes; the ICO is for the ones that still ask for
      /favicon.ico, and the touch icon is square because iOS rounds it itself. -->
@@ -18,12 +24,86 @@
 
 <!-- The image shared into dive forums and groups is a frame of the hero with the
      control layer composited onto it, not the app icon. -->
+<!-- Every URL here is absolute: crawlers do not resolve og:image against the
+     page, and a relative one simply shows no picture. 1200x630 is the size
+     every network crops to without letterboxing. -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="MadiCam">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://madi.cam/">
 <meta property="og:title" content="MadiCam — an underwater camera for iPhone">
 <meta property="og:description" content="A camera app you can actually use underwater. With one-tap underwater colour correction.">
-<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:image" content="https://madi.cam/assets/img/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The MadiCam capture screen over underwater footage: large glass controls down both sides of the frame.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="assets/img/og.jpg">
+<meta name="twitter:title" content="MadiCam — an underwater camera for iPhone">
+<meta name="twitter:description" content="A camera app you can actually use underwater. With one-tap underwater colour correction.">
+<meta name="twitter:image" content="https://madi.cam/assets/img/og.jpg">
+<meta name="twitter:image:alt" content="The MadiCam capture screen over underwater footage: large glass controls down both sides of the frame.">
+
+<!-- What search engines and agents read instead of the page. Keep it to what
+     the page itself says: no store URL until there is one, no price until one
+     is chosen, and no rating the app has not been given. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://madi.cam/#website",
+      "url": "https://madi.cam/",
+      "name": "MadiCam",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://madi.cam/#makers" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://madi.cam/#makers",
+      "name": "MadiCam",
+      "url": "https://madi.cam/",
+      "logo": "https://madi.cam/apple-touch-icon.png",
+      "email": "madicam@rafapages.com",
+      "founder": [
+        { "@type": "Person", "name": "Rafa Pagés", "url": "https://rafapages.com" },
+        { "@type": "Person", "name": "Guille Pagés" }
+      ]
+    },
+    {
+      "@type": "MobileApplication",
+      "@id": "https://madi.cam/#app",
+      "name": "MadiCam",
+      "url": "https://madi.cam/",
+      "description": "A camera app for iPhone you can actually use underwater, with large controls that work through a housing, one-tap underwater colour correction for photos and video, and a gallery filed as a dive log. Designed around the DIVEVOLK SeaTouch 4 Max.",
+      "operatingSystem": "iOS",
+      "applicationCategory": "PhotographyApplication",
+      "image": "https://madi.cam/assets/img/og.jpg",
+      "screenshot": [
+        "https://madi.cam/assets/img/gallery.jpg",
+        "https://madi.cam/assets/img/grade-fixed.jpg"
+      ],
+      "featureList": [
+        "Take photos while video keeps recording, with no mode switch",
+        "Large controls placed away from the screen edge, for use through an underwater housing",
+        "Haptic feedback on every press",
+        "One-tap underwater colour correction for photos and video",
+        "Hold to compare with the original",
+        "Gallery grouped by dive, with site, dive time, max depth and water temperature"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR",
+        "description": "Free to download. One-time purchase to unlock. No subscription."
+      },
+      "author": { "@id": "https://madi.cam/#makers" },
+      "publisher": { "@id": "https://madi.cam/#makers" }
+    }
+  ]
+}
+</script>
 
 <!-- tokens.css must load first: every
      other sheet consumes its custom properties. -->

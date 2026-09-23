@@ -1,7 +1,7 @@
 # MadiCam website
 
 The landing page for MadiCam, served by GitHub Pages at
-https://madicam.github.io.
+https://madi.cam (madicam.github.io redirects there).
 
 It's one static page with no framework and no build step. Whatever is on `main`
 goes live.
@@ -17,8 +17,21 @@ goes live.
 │   ├── hero.js         the glass capability probe and the 15s loop
 │   ├── compare.js      the before/after, by pointer and by keyboard
 │   └── media.js        one video playing at a time, and never off screen
-└── assets/             images, video and the App Store badge
+├── assets/             images, video and the App Store badge
+├── privacy/index.html  the privacy policy, at /privacy
+├── 404.html            what GitHub Pages serves for a missing path
+├── robots.txt          open to every crawler, points at the sitemap
+├── sitemap.xml         the two pages; bump <lastmod> when one changes
+└── llms.txt            a plain summary of the app for language models
 ```
+
+## Search and sharing
+
+The site lives at https://madi.cam. Every page has a canonical link and Open
+Graph tags with absolute URLs. The share image is `assets/img/og.jpg`, at
+1200×630. `index.html` also carries JSON-LD describing the app. When a fact
+changes on the page (the store URL, the price), change it in the JSON-LD and in
+`llms.txt` too.
 
 ## Run it
 
