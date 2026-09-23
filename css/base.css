@@ -160,12 +160,14 @@ a:hover { text-decoration-color: currentColor; }
   transition: transform .18s var(--ease);
 }
 
-/* Ours, not Apple's. Sits in the clear space above the badge and only while
- * the badge is the thing under the pointer or the keyboard. */
+/* Ours, not Apple's. Shown only while the badge is the thing under the
+ * pointer or the keyboard. It drops below the badge rather than above it,
+ * because above is where the app's name sits, and covering the small print
+ * for a moment costs less than covering the name. */
 .appstore__tip {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + .45rem);
+  top: calc(100% + .45rem);
   translate: -50% 0;
   padding: .32rem .6rem;
   border-radius: 6px;

@@ -188,6 +188,19 @@
   gap: .85rem;
 }
 
+/* The app's name, rounded and heavy like the words on its controls. Pulled
+ * tight to the badge so the two read as one line of a store listing. */
+.hero__name {
+  margin: 0 0 -.6rem;
+  color: var(--chalk);
+  font-family: var(--font-round);
+  font-weight: 900;
+  font-size: clamp(3.25rem, 1.75rem + 1.6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  text-shadow: 0 2px 18px rgba(2, 12, 19, .8);
+}
+
 /* The trial and the purchase, in two sentences. Capped narrow so it breaks
  * between them rather than anywhere. No figure here until the price is set. */
 .hero__terms {
