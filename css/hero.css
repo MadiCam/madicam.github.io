@@ -188,8 +188,8 @@
   gap: .85rem;
 }
 
-/* Triple duty: the trial, the price and the differentiator, in two sentences.
- * Capped narrow so it breaks between them rather than anywhere. */
+/* The trial and the purchase, in two sentences. Capped narrow so it breaks
+ * between them rather than anywhere. No figure here until the price is set. */
 .hero__terms {
   margin: 0;
   color: var(--haze);
@@ -206,9 +206,6 @@
 .hero__cta .appstore img { height: clamp(56px, 48px + 1.6vw, 72px); }
 .hero__cta .appstore { padding: 6px; border-radius: 13px; }
 .hero__cta .appstore:focus-visible { border-radius: 13px; }
-
-/* The one number above the fold. */
-.hero__terms .price { color: var(--chalk); font-weight: 700; }
 
 /* ================================================================ the frame */
 

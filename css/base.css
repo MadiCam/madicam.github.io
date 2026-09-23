@@ -150,6 +150,7 @@ a:hover { text-decoration-color: currentColor; }
  * 40px tall — the minimum, not a scaled-up version — and the extra height is
  * padding, so the tap target clears 44px without enlarging the artwork. */
 .appstore {
+  position: relative;
   display: inline-flex;
   align-items: center;
   /* Apple asks for clear space around the badge on all sides. */
@@ -157,6 +158,34 @@ a:hover { text-decoration-color: currentColor; }
   border-radius: 9px;
   text-decoration: none;
   transition: transform .18s var(--ease);
+}
+
+/* Ours, not Apple's. Sits in the clear space above the badge and only while
+ * the badge is the thing under the pointer or the keyboard. */
+.appstore__tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + .45rem);
+  translate: -50% 0;
+  padding: .32rem .6rem;
+  border-radius: 6px;
+  background: var(--deep);
+  color: var(--chalk);
+  font-size: .8125rem;
+  line-height: 1.3;
+  letter-spacing: .005em;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px var(--rule);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s var(--ease);
+}
+
+.appstore:hover .appstore__tip,
+.appstore:focus-visible .appstore__tip { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .appstore__tip { transition: none; }
 }
 
 .appstore img {
