@@ -17,10 +17,15 @@
 
 <!-- The small mark in chalk on a deep-water blue plate. The SVG is what every
      current browser takes; the ICO is for the ones that still ask for
-     /favicon.ico, and the touch icon is square because iOS rounds it itself. -->
+     /favicon.ico, and the touch icon is square because iOS rounds it itself.
+     Android reads its icons from the manifest instead: the same square plate
+     at 192 and 512, and a maskable one with the mark shrunk inside the safe
+     circle, because Android crops that one to whatever shape the launcher
+     uses. -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
 
 <!-- The image shared into dive forums and groups: the manta mark and the
      headline over a diver and a manta, not the app icon. -->

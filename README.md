@@ -19,6 +19,7 @@ goes live.
 │   └── media.js        one video playing at a time, and never off screen
 ├── assets/             images, video and the App Store badge
 ├── privacy/index.html  the privacy policy, at /privacy
+├── site.webmanifest    Android's icons (icon-*.png at the root)
 ├── 404.html            what GitHub Pages serves for a missing path
 ├── robots.txt          open to every crawler, points at the sitemap
 ├── sitemap.xml         the two pages; bump <lastmod> when one changes
