@@ -2,7 +2,7 @@
 
 > MadiCam is an underwater camera app for iPhone. It has large controls you can use through a dive housing, one-tap underwater colour correction for photos and video, and a gallery filed as a dive log. It is designed around the DIVEVOLK SeaTouch 4 Max housing. Free to download, then a one-time purchase to unlock: no subscription, no watermark.
 
-MadiCam is made by two brothers, Rafa and Guille Pagés, one of them a diving instructor. It is coming soon to the App Store; there is no store listing or final price yet.
+MadiCam is made by two brothers, Rafa and Guille Pagés, one of them a diving instructor. It is on the App Store: https://apps.apple.com/us/app/madicam-underwater-camera/id6796099966.
 
 ## Features
 
